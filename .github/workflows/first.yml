@@ -1,0 +1,21 @@
+name: My First Pipeline
+
+on:
+  push:
+  workflow_dispatch:
+
+jobs:
+  hello:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Say hello
+        run: echo "Hello from CI!"
+
+      - name: Show the time
+        run: date
+
+      - name: Get my code
+        uses: actions/checkout@v4
+
+      - name: List my files
+        run: ls -la
