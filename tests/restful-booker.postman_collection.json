@@ -126,6 +126,9 @@
             "exec": [
               "pm.test('Status is 404', function () {",
               "    pm.response.to.have.status(404);",
+              "});",
+			  "pm.test('Response time under 3 seconds', function () {",
+              "    pm.expect(pm.response.responseTime).to.be.below(3000);",
               "});"
             ]
           }
