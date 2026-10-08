@@ -11,9 +11,6 @@ jobs:
       - name: Say hello
         run: echo "Hello from CI!"
         
-      - name: Something goes wrong
-        run: exit 1
-        
       - name: Show the time
         run: date
 
