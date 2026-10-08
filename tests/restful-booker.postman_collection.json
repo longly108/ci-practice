@@ -1,0 +1,136 @@
+{
+  "info": {
+    "name": "Restful Booker - Smoke Tests",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    { "key": "baseUrl", "value": "https://restful-booker.herokuapp.com" },
+    { "key": "bookingId", "value": "" }
+  ],
+  "item": [
+    {
+      "name": "1. Health check",
+      "request": {
+        "method": "GET",
+        "url": "{{baseUrl}}/ping"
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Status is 201', function () {",
+              "    pm.response.to.have.status(201);",
+              "});"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "2. Get all bookings",
+      "request": {
+        "method": "GET",
+        "url": "{{baseUrl}}/booking"
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Status is 200', function () {",
+              "    pm.response.to.have.status(200);",
+              "});",
+              "pm.test('Response is a list', function () {",
+              "    pm.expect(pm.response.json()).to.be.an('array');",
+              "});",
+              "pm.test('Response time under 3 seconds', function () {",
+              "    pm.expect(pm.response.responseTime).to.be.below(3000);",
+              "});"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "3. Create a booking",
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" },
+          { "key": "Accept", "value": "application/json" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"firstname\": \"Long\",\n  \"lastname\": \"Tester\",\n  \"totalprice\": 150,\n  \"depositpaid\": true,\n  \"bookingdates\": {\n    \"checkin\": \"2026-10-01\",\n    \"checkout\": \"2026-10-05\"\n  },\n  \"additionalneeds\": \"Breakfast\"\n}",
+          "options": { "raw": { "language": "json" } }
+        },
+        "url": "{{baseUrl}}/booking"
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Status is 200', function () {",
+              "    pm.response.to.have.status(200);",
+              "});",
+              "const body = pm.response.json();",
+              "pm.test('Response has a bookingid', function () {",
+              "    pm.expect(body.bookingid).to.be.a('number');",
+              "});",
+              "pm.test('First name saved correctly', function () {",
+              "    pm.expect(body.booking.firstname).to.eql('Long');",
+              "});",
+              "pm.collectionVariables.set('bookingId', body.bookingid);"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "4. Read the booking we created",
+      "request": {
+        "method": "GET",
+        "header": [
+          { "key": "Accept", "value": "application/json" }
+        ],
+        "url": "{{baseUrl}}/booking/{{bookingId}}"
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Status is 200', function () {",
+              "    pm.response.to.have.status(200);",
+              "});",
+              "pm.test('Last name is Tester', function () {",
+              "    pm.expect(pm.response.json().lastname).to.eql('Tester');",
+              "});"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "5. Booking that does not exist",
+      "request": {
+        "method": "GET",
+        "url": "{{baseUrl}}/booking/99999999"
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Status is 404', function () {",
+              "    pm.response.to.have.status(404);",
+              "});"
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}
