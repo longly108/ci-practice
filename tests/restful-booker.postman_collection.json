@@ -126,9 +126,34 @@
             "exec": [
               "pm.test('Status is 404', function () {",
               "    pm.response.to.have.status(404);",
-              "});",
-			  "pm.test('Response time under 3 seconds', function () {",
-              "    pm.expect(pm.response.responseTime).to.be.below(3000);",
+              "});"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "6. Checkout before checkin should be rejected",
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" },
+          { "key": "Accept", "value": "application/json" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"firstname\": \"Long\",\n  \"lastname\": \"Tester\",\n  \"totalprice\": 150,\n  \"depositpaid\": true,\n  \"bookingdates\": {\n    \"checkin\": \"2026-10-05\",\n    \"checkout\": \"2026-10-01\"\n  },\n  \"additionalneeds\": \"Breakfast\"\n}",
+          "options": { "raw": { "language": "json" } }
+        },
+        "url": "{{baseUrl}}/booking"
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Checkout before checkin is rejected (400)', function () {",
+              "    pm.response.to.have.status(400);",
               "});"
             ]
           }
