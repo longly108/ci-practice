@@ -19,3 +19,9 @@ jobs:
 
       - name: List my files
         run: ls -la
+    
+  PythonVersion:
+    runs-on: python3
+    steps:
+      - name: Python version
+        run:  python3 --version
