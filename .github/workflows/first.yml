@@ -19,5 +19,9 @@ jobs:
 
       - name: List my files
         run: ls -la
+
+  Pythonversion:
+    runs-on: ubuntu-latest
+    steps:
       - name: Python version
         run: python3 --version
