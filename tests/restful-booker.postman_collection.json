@@ -106,7 +106,7 @@
               "    pm.response.to.have.status(200);",
               "});",
               "pm.test('Last name is Tester', function () {",
-              "    pm.expect(pm.response.json().lastname).to.eql('Tester');",
+              "    pm.expect(pm.response.json().lastname).to.eql('Nguyen');",
               "});"
             ]
           }
