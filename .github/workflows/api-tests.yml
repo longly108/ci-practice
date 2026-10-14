@@ -3,16 +3,62 @@ name: API Tests
 on:
   push:
   workflow_dispatch:
+  schedule:
+    - cron: "0 0 * * *"        # every day 00:00 UTC = 07:00 Vietnam time
 
 jobs:
-  api-test:
+  # ---------- STAGE 1: is the server alive? ----------
+  smoke:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Ping the API
+        run: curl --fail --silent --show-error https://restful-booker.herokuapp.com/ping
+
+  # ---------- STAGE 2a: tests that MUST pass ----------
+  regression:
+    needs: smoke
     runs-on: ubuntu-latest
     steps:
       - name: Get my code
         uses: actions/checkout@v4
 
-      - name: Install newman
-        run:  npm install -g newman
+      - name: Install Newman and the HTML reporter
+        run: npm install -g newman newman-reporter-htmlextra
 
-      - name: Run API tests
-        run: newman run tests/restful-booker.postman_collection.json
+      - name: Run regression tests
+        run: >
+          newman run tests/regression.postman_collection.json
+          --reporters cli,htmlextra
+          --reporter-htmlextra-export reports/regression-report.html
+
+      - name: Save the HTML report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: regression-report
+          path: reports/
+
+  # ---------- STAGE 2b: known bugs, reported but not blocking ----------
+  known-bugs:
+    needs: smoke
+    runs-on: ubuntu-latest
+    continue-on-error: true
+    steps:
+      - name: Get my code
+        uses: actions/checkout@v4
+
+      - name: Install Newman and the HTML reporter
+        run: npm install -g newman newman-reporter-htmlextra
+
+      - name: Run known-bug tests
+        run: >
+          newman run tests/known-bugs.postman_collection.json
+          --reporters cli,htmlextra
+          --reporter-htmlextra-export reports/known-bugs-report.html
+
+      - name: Save the HTML report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: known-bugs-report
+          path: reports/
