@@ -12,7 +12,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Ping the API
-        run: curl --fail --silent --show-error https://restful-booker.herokuapp.com/pingg
+        run: curl --fail --silent --show-error https://restful-booker.herokuapp.com/ping
 
   # ---------- STAGE 2a: tests that MUST pass ----------
   regression:
